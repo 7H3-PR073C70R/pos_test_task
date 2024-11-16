@@ -1,0 +1,90 @@
+name: Test Code and Lints
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  check-semantic-pr:
+    name: Check for Semantic Commits Structure
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/semantic_pull_request.yml@ec62d37e35cf087e002a686afa491d036d0ea2cb # pin@v5.5.3
+
+  check-spelling:
+    name: Check for Spelling Errors
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/spell_check.yml@ec62d37e35cf087e002a686afa491d036d0ea2cb # pin@v6
+    with:
+      includes: |
+        **/*.md
+      modified_files_only: false
+
+  check-lint:
+    name: Check Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@bcec24ecf7bef7763f50dcf9a91533853b686ae2 # pin@v2
+        with:
+          version: "3.4.0"
+          channel: "stable"
+      
+      - name: Create and populate ENVs
+        run: |
+          touch .env.development
+          touch .env.staging
+          touch .env.production
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Run build_runner
+        run: dart run build_runner build -d
+
+      - name: Format Dart code
+        run: dart format .
+
+      - name: Analyze Dart code
+        run: flutter analyze
+
+  unit-test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@bcec24ecf7bef7763f50dcf9a91533853b686ae2 # pin@v2
+        with:
+          version: "3.4.0"
+          channel: "stable"
+
+      - name: Create and populate ENVs
+        run: |
+          touch .env.development
+          touch .env.staging
+          touch .env.production
+
+      - name: Upgrade Dart packages
+        run: dart pub upgrade
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Run build_runner
+        run: dart run build_runner build -d
+
+      - name: Run Flutter tests
+        run: flutter test

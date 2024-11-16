@@ -1,0 +1,9 @@
+{
+"exit": "Exit",
+"orderList": "Order List",
+    "@@locale": "en",
+    "sample": "sample",
+    "@sample": {
+        "description": "Sample text"
+    }
+}

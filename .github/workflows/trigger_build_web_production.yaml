@@ -1,0 +1,15 @@
+name: Trigger Production Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trigger_production:
+    uses: ./.github/workflows/web_build.yaml
+    with:
+      init_env: "production"
+    secrets:
+      base_url: ${{ secrets.PRODUCTION_BASE_URL }}
+      vercel_token: ${{ secrets.VERCEL_TOKEN }}
+      vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
+      vercel_org_id: ${{ secrets.VERCEL_ORG_ID }}

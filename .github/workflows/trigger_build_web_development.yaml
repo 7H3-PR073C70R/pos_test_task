@@ -1,0 +1,15 @@
+name: Trigger Development Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trigger_development:
+    uses: ./.github/workflows/web_build.yaml
+    with:
+      init_env: "development"
+    secrets:
+      base_url: ${{ secrets.DEVELOPMENT_BASE_URL }}
+      vercel_token: ${{ secrets.VERCEL_TOKEN }}
+      vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
+      vercel_org_id: ${{ secrets.VERCEL_ORG_ID }}

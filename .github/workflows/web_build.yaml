@@ -1,0 +1,70 @@
+name: Web Build
+
+on:
+  workflow_call:
+    inputs:
+      init_env:
+        description: "Init Environment"
+        type: string
+        required: true
+    secrets:
+      #! Beginning of ENV file secret
+      base_url:
+        description: "Base URL for the app"
+        required: true
+      #! Ending of ENV file secret
+
+      #! Beginning of Build related Secrets
+      vercel_token:
+        description: "Vercel Token for deployment"
+        required: true
+      vercel_project_id:
+        description: "Vercel Project ID"
+        required: true
+      vercel_org_id:
+        description: "Vercel Organization ID"
+        required: false
+      #! Ending of Build related Secrets
+
+jobs:
+  build_web:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@bcec24ecf7bef7763f50dcf9a91533853b686ae2 # pin@v2
+
+    - name: Create environment files
+      run: |
+        # Create the .env file for the specified environment and populate with data
+        echo "API_BASE_URL=${{ secrets.base_url }}" > .env.${{ inputs.init_env }}
+        
+        # Create dummy files for other environments
+        for env in development staging production; do
+          if [ "$env" != "${{ inputs.init_env }}" ]; then
+            echo "API_BASE_URL=dummy" > .env.$env
+          fi
+        done
+
+    - name: Install dependencies
+      run: flutter pub get
+    
+    - name: Generate Code
+      run: dart run build_runner build -d
+
+    - name: Build Flutter web
+      run: flutter build web --release --flavor ${{ inputs.init_env }}
+
+    - name: Deploy to Vercel
+      env:
+        VERCEL_TOKEN: ${{ secrets.vercel_token }}
+        VERCEL_PROJECT_ID: ${{ secrets.vercel_project_id }}
+        VERCEL_ORG_ID: ${{ secrets.vercel_org_id }}
+      run: |
+        npx vercel --prod --token $VERCEL_TOKEN --confirm --scope $VERCEL_ORG_ID --project $VERCEL_PROJECT_ID --env-file .env.${{ inputs.init_env }}
+    
+    - name: Verify deployment (optional)
+      run: echo "Deployment completed."

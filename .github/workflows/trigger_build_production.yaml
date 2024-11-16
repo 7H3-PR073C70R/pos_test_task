@@ -1,0 +1,33 @@
+name: Trigger Build Production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  internal_android_build:
+    name: Build Android Staging
+    uses: ./.github/workflows/android_build.yaml
+    with:
+      init_env: production
+    secrets:
+      base_url: ${{ secrets.BASE_URL }}
+      android_keystore_base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      android_key_password: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      android_key_alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+      firebase_android_app_id: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+      firebase_token: ${{ secrets.FIREBASE_TOKEN }}
+
+  internal_ios_build:
+    name: Build iOS Staging
+    uses: ./.github/workflows/ios_build.yaml
+    with:
+      init_env: production
+    secrets:
+      base_url: ${{ secrets.BASE_URL }}
+      certificate_p12: ${{ secrets.CERTIFICATE_P12 }}
+      certificate_password: ${{ secrets.CERTIFICATE_PASSWORD }}
+      provisioning_profile: ${{ secrets.PROVISIONING_PROFILE }}
+      firebase_ios_app_id: ${{ secrets.FIREBASE_IOS_APP_ID }}
+      firebase_token: ${{ secrets.FIREBASE_TOKEN }}
+            

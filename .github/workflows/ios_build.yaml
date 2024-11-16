@@ -1,0 +1,120 @@
+name: iOS Build
+
+on:
+  workflow_call:
+    inputs:
+      init_env:
+        description: "Init Environment"
+        type: string
+        required: true
+    secrets:
+      #! Beginning of EVN file secret
+      base_url:
+        description: "Base URL for the app"
+        required: true
+      #! Ending of EVN file secret
+
+      #! Beginning of Build related Secrets
+      certificate_p12:
+        description: "Base64 encoded iOS certificate (.p12)"
+        required: true
+      certificate_password:
+        description: "Password for the iOS certificate"
+        required: true
+      provisioning_profile:
+        description: "Base64 encoded provisioning profile"
+        required: true
+      firebase_ios_app_id:
+        description: "Firebase App ID for iOS"
+        required: true
+      firebase_token:
+        description: "Firebase token for authentication"
+        required: true
+      #! Ending of Build related Secrets
+
+jobs:
+  build_ios:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@bcec24ecf7bef7763f50dcf9a91533853b686ae2 # pin@v2
+
+    - name: Create environment files
+      run: |
+        # Create the .env file for the specified environment and populate with data
+        echo "API_BASE_URL=${{ secrets.base_url }}" > .env.${{ inputs.init_env }}
+        
+        # Create dummy files for other environments
+        for env in development staging production; do
+          if [ "$env" != "${{ inputs.init_env }}" ]; then
+            echo "API_BASE_URL=dummy" > .env.$env
+          fi
+        done
+
+    - name: Install dependencies
+      run: flutter pub get
+    
+    - name: Generate Code
+      run: dart run build_runner build -d
+
+    - name: Install CocoaPods dependencies
+      run: |
+        cd ios
+        pod install
+        cd ..
+
+    - name: Decrypt and install provisioning profile and certificate
+      env:
+        CERTIFICATE_P12: ${{ secrets.certificate_p12 }}
+        CERTIFICATE_PASSWORD: ${{ secrets.certificate_password }}
+        PROVISIONING_PROFILE: ${{ secrets.provisioning_profile }}
+      run: |
+        echo $CERTIFICATE_P12 | base64 --decode > ios_distribution.p12
+        echo $PROVISIONING_PROFILE | base64 --decode > profile.mobileprovision
+
+        security create-keychain -p "" build.keychain
+        security import ios_distribution.p12 -k build.keychain -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+        security set-keychain-settings -t 3600 -u build.keychain
+        security list-keychains -s build.keychain
+        security default-keychain -s build.keychain
+        security unlock-keychain -p "" build.keychain
+        security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+    - name: Set up signing identity
+      run: |
+        export APP_IDENTIFIER="your.app.bundle.id"
+        export DEVELOPMENT_TEAM="YourTeamID"
+        export CODE_SIGN_STYLE="Manual"
+        export PROVISIONING_PROFILE_SPECIFIER="profile"
+
+    - name: Build iOS app
+      run: flutter build ios --release --flavor ${{ inputs.init_env }} --no-codesign
+
+    - name: Code sign the app
+      run: |
+        xcodebuild -workspace ios/Runner.xcworkspace \
+        -scheme Runner \
+        -sdk iphoneos \
+        -configuration Release \
+        -allowProvisioningUpdates \
+        -archivePath $PWD/build/Runner.xcarchive \
+        archive
+
+        xcodebuild -exportArchive \
+        -archivePath $PWD/build/Runner.xcarchive \
+        -exportOptionsPlist ios/ExportOptions.plist \
+        -exportPath $PWD/build/Runner.ipa
+
+    - name: Upload IPA to Firebase App Distribution
+      uses: wzieba/Firebase-Distribution-Github-Action@a3c833504e7ea073a3ca1c9449b5c9bc36701316 # pin@v1
+      with:
+        appId: ${{ secrets.firebase_ios_app_id }}
+        token: ${{ secrets.firebase_token }}
+        groups: testers
+        file: build/Runner.ipa
