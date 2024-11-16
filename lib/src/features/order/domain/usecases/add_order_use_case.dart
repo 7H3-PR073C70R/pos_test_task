@@ -9,6 +9,6 @@ class AddOrderUseCase implements UseCase<OrderEntity, OrderEntity> {
   final OrderRepository _orderRepository;
   @override
   Future<Either<Failure, OrderEntity>> call(OrderEntity params) {
-   return _orderRepository.addOrder(params);
+    return _orderRepository.addOrder(params);
   }
 }

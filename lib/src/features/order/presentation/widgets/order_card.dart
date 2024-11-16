@@ -53,7 +53,7 @@ class OrderCard extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('09:42'),
+            const Text('09:42'),
             Text(
               'Slyvia Do',
               style: context.textTheme.titleMedium,

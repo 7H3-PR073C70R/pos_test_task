@@ -9,6 +9,6 @@ class GetTablesUseCase implements UseCase<List<TableEntity>, NoParams> {
   final TableRepository _orderRepository;
   @override
   Future<Either<Failure, List<TableEntity>>> call(NoParams params) {
-   return _orderRepository.getTables();
+    return _orderRepository.getTables();
   }
 }

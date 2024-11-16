@@ -9,6 +9,6 @@ class UpdateTableUseCase implements UseCase<TableEntity, TableEntity> {
   final TableRepository _orderRepository;
   @override
   Future<Either<Failure, TableEntity>> call(TableEntity params) {
-   return _orderRepository.updateTable(params);
+    return _orderRepository.updateTable(params);
   }
 }

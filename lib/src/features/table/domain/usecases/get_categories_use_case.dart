@@ -9,6 +9,6 @@ class GetCategoriesUseCase implements UseCase<List<CategoryEntity>, NoParams> {
   final TableRepository _orderRepository;
   @override
   Future<Either<Failure, List<CategoryEntity>>> call(NoParams params) {
-   return _orderRepository.getCategories();
+    return _orderRepository.getCategories();
   }
 }

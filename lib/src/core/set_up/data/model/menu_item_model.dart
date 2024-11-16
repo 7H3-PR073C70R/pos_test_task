@@ -39,10 +39,10 @@ class MenuItemModel extends MenuItemEntity implements BaseModel<MenuItemModel> {
       'price': price,
     };
   }
-  
+
   @override
   MenuItemModel fromJson(Map<String, dynamic> json) {
-   return MenuItemModel.fromJson(json);
+    return MenuItemModel.fromJson(json);
   }
 }
 

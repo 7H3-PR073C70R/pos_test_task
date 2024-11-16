@@ -14,7 +14,8 @@ void _initDataSource() {
         locator(),
         locator(),
       ),
-    )..registerLazySingleton<TableLocalDataSource>(
+    )
+    ..registerLazySingleton<TableLocalDataSource>(
       () => TableLocalDataSourceImpl(
         locator(),
         locator(),

@@ -9,6 +9,6 @@ class GetOrdersUseCase implements UseCase<List<OrderEntity>, NoParams> {
   final OrderRepository _orderRepository;
   @override
   Future<Either<Failure, List<OrderEntity>>> call(NoParams params) {
-   return _orderRepository.getOrders();
+    return _orderRepository.getOrders();
   }
 }

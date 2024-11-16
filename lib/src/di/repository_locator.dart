@@ -1,15 +1,18 @@
 part of 'locator.dart';
 
 Future<void> _initRepositoryLocator() async {
-  locator..registerLazySingleton<SetUpRepository>(
-    () => SetUpRepositoryImpl(
-      locator(),
-    ),
-  )..registerLazySingleton<OrderRepository>(
+  locator
+    ..registerLazySingleton<SetUpRepository>(
+      () => SetUpRepositoryImpl(
+        locator(),
+      ),
+    )
+    ..registerLazySingleton<OrderRepository>(
       () => OrderRepositoryImpl(
         locator(),
       ),
-    )..registerLazySingleton<TableRepository>(
+    )
+    ..registerLazySingleton<TableRepository>(
       () => TableRepositoryImpl(
         locator(),
       ),

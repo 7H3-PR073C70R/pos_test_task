@@ -7,9 +7,9 @@ import 'package:test_project/src/core/utils/either.dart';
 class SetUpRepositoryImpl implements SetUpRepository {
   const SetUpRepositoryImpl(this._dataSource);
   final SetUpLocalDataSource _dataSource;
-  
+
   @override
   Future<Either<Failure, void>> saveInitialItems() {
-   return _dataSource.saveInitialItems().makeRequest();
+    return _dataSource.saveInitialItems().makeRequest();
   }
 }

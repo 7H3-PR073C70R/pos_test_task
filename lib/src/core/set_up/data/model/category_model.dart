@@ -13,7 +13,8 @@ class CategoryModel extends CategoryEntity implements BaseModel<CategoryModel> {
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     return CategoryModel(
       items: (jsonDecode(json['items'] as String) as List)
-          .map((e) => int.parse(e.toString())).toList(),
+          .map((e) => int.parse(e.toString()))
+          .toList(),
       name: json['name'] as String,
       id: json['id'] as int,
     );

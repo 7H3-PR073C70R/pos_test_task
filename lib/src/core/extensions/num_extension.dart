@@ -14,8 +14,7 @@ extension ResponsiveExtension on num {
 }
 
 extension NumExtension on num {
-  String get toAmount =>
-      NumberFormat.currency(symbol: r'$').format(this);
+  String get toAmount => NumberFormat.currency(symbol: r'$').format(this);
 
   String get formattedNum {
     if (this < 1000) {
