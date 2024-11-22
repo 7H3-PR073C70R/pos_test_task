@@ -30,7 +30,7 @@ dependencies:
   flutter_svg: ^2.0.9
   file_picker: ^8.1.4
   image_picker: ^1.1.0
-  equatable: ^2.0.5
+  equatable: ^2.0.7
   sqflite: ^2.4.1
 
 dev_dependencies:
