@@ -41,7 +41,7 @@ jobs:
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4
 
     - name: Set up Flutter
-      uses: subosito/flutter-action@bcec24ecf7bef7763f50dcf9a91533853b686ae2 # pin@v2
+      uses: subosito/flutter-action@74af56c5ed2697ba4621264652728e8d217e53d3 # pin@v2
 
     - name: Create environment files
       run: |
