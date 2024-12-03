@@ -17,11 +17,11 @@ on:
 jobs:
   check-semantic-pr:
     name: Check for Semantic Commits Structure
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/semantic_pull_request.yml@ec62d37e35cf087e002a686afa491d036d0ea2cb # pin@v5.5.3
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/semantic_pull_request.yml@ca25158fcc756fbd1a6fc42ba1354200914c6a98 # pin@v5.5.3
 
   check-spelling:
     name: Check for Spelling Errors
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/spell_check.yml@ec62d37e35cf087e002a686afa491d036d0ea2cb # pin@v6
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/spell_check.yml@ca25158fcc756fbd1a6fc42ba1354200914c6a98 # pin@v6
     with:
       includes: |
         **/*.md
